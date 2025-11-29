@@ -1,0 +1,74 @@
+.kp-tracker-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Let clicks pass through to video */
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start; /* Changed from flex-end to flex-start for top-right */
+  padding: 10px;
+  box-sizing: border-box;
+  z-index: 50;
+}
+
+/* Override for inline injection in YouTube title */
+.kp-inline-badge-wrapper .kp-tracker-overlay {
+  position: static;
+  width: auto;
+  height: auto;
+  display: inline-flex;
+  padding: 0;
+  transform: none;
+}
+
+/* Specific styles for inline usage on YouTube to remove "badge" look if desired, or just make it fit better */
+.kp-inline-badge-wrapper .kp-tracker-badge {
+  padding: 4px 8px;
+  font-size: 1.4rem; /* Match YouTube title size roughly if needed, or keep small */
+  box-shadow: none;
+  text-transform: none; /* Optional: if you want natural case */
+  border-radius: 2px;
+}
+
+.kp-tracker-badge {
+  pointer-events: auto; /* Enable clicks on the badge */
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-family: "Roboto","Arial",sans-serif; /* Match YouTube font */
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  text-transform: uppercase;
+  line-height: 1; /* Reset line height for better inline alignment */
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Space between icon and text */
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+.kp-tracker-badge.watched {
+  background-color: #10b981; /* Green */
+  color: white;
+  border: 1px solid #059669;
+}
+
+.kp-tracker-badge.watched:hover {
+  background-color: #059669;
+}
+
+/* Unwatched state: Make it green-themed but distinct (e.g., outline or darker green) */
+.kp-tracker-badge.unwatched {
+  background-color: transparent;
+  color: #10b981; /* Green text */
+  border: 1px solid #10b981; /* Green border */
+}
+
+.kp-tracker-badge.unwatched:hover {
+  background-color: rgba(16, 185, 129, 0.1); /* Light green tint on hover */
+  color: #059669;
+  border-color: #059669;
+}
