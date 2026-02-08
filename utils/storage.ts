@@ -5,38 +5,33 @@ export const syncEnabledItem = storage.defineItem<boolean>('local:sync_enabled',
   defaultValue: false,
 });
 
-// Local storage for watched videos
+// Local storage - always the source of truth
 const watchedVideosLocalItem = storage.defineItem<string[]>('local:watched_videos', {
   defaultValue: [],
 });
 
-// Sync storage for watched videos (uses chrome.storage.sync)
+// Sync storage - mirrors local for cross-device syncing
 const watchedVideosSyncItem = storage.defineItem<string[]>('sync:watched_videos', {
   defaultValue: [],
 });
-
-// Get the active storage item based on sync setting
-const getActiveStorage = async () => {
-  const syncEnabled = await syncEnabledItem.getValue();
-  return syncEnabled ? watchedVideosSyncItem : watchedVideosLocalItem;
-};
 
 export const getSyncEnabled = async (): Promise<boolean> => {
   return await syncEnabledItem.getValue();
 };
 
 export const enableSync = async (): Promise<void> => {
-  // Merge local and sync data so nothing is lost
+  // Merge local and sync data so nothing is lost on either side
   const localData = await watchedVideosLocalItem.getValue();
   const syncData = await watchedVideosSyncItem.getValue();
   const merged = Array.from(new Set([...localData, ...syncData]));
 
+  await watchedVideosLocalItem.setValue(merged);
   await watchedVideosSyncItem.setValue(merged);
   await syncEnabledItem.setValue(true);
 };
 
 export const disableSync = async (): Promise<void> => {
-  // Copy sync data back to local so nothing is lost
+  // Merge sync data back into local before disabling
   const syncData = await watchedVideosSyncItem.getValue();
   const localData = await watchedVideosLocalItem.getValue();
   const merged = Array.from(new Set([...localData, ...syncData]));
@@ -45,9 +40,9 @@ export const disableSync = async (): Promise<void> => {
   await syncEnabledItem.setValue(false);
 };
 
+// Always reads from local storage (the source of truth)
 export const getWatchedVideos = async (): Promise<string[]> => {
-  const activeStorage = await getActiveStorage();
-  return await activeStorage.getValue();
+  return await watchedVideosLocalItem.getValue();
 };
 
 export const isWatched = async (videoId: string): Promise<boolean> => {
@@ -56,16 +51,19 @@ export const isWatched = async (videoId: string): Promise<boolean> => {
 };
 
 export const markAsWatched = async (videoId: string): Promise<void> => {
-  const activeStorage = await getActiveStorage();
-  const watched = await activeStorage.getValue();
+  const watched = await watchedVideosLocalItem.getValue();
   if (!watched.includes(videoId)) {
-    await activeStorage.setValue([...watched, videoId]);
+    const updated = [...watched, videoId];
+    await watchedVideosLocalItem.setValue(updated);
+    const syncEnabled = await syncEnabledItem.getValue();
+    if (syncEnabled) {
+      await watchedVideosSyncItem.setValue(updated);
+    }
   }
 };
 
 export const bulkMarkAsWatched = async (videoIds: string[]): Promise<void> => {
-  const activeStorage = await getActiveStorage();
-  const watched = await activeStorage.getValue();
+  const watched = await watchedVideosLocalItem.getValue();
   const watchedSet = new Set(watched);
   let changed = false;
 
@@ -77,28 +75,43 @@ export const bulkMarkAsWatched = async (videoIds: string[]): Promise<void> => {
   }
 
   if (changed) {
-    await activeStorage.setValue(Array.from(watchedSet));
+    const updated = Array.from(watchedSet);
+    await watchedVideosLocalItem.setValue(updated);
+    const syncEnabled = await syncEnabledItem.getValue();
+    if (syncEnabled) {
+      await watchedVideosSyncItem.setValue(updated);
+    }
   }
 };
 
 export const markAsUnwatched = async (videoId: string): Promise<void> => {
-  const activeStorage = await getActiveStorage();
-  const watched = await activeStorage.getValue();
-  const newWatched = watched.filter((id) => id !== videoId);
-  await activeStorage.setValue(newWatched);
+  const watched = await watchedVideosLocalItem.getValue();
+  const updated = watched.filter((id) => id !== videoId);
+  await watchedVideosLocalItem.setValue(updated);
+  const syncEnabled = await syncEnabledItem.getValue();
+  if (syncEnabled) {
+    await watchedVideosSyncItem.setValue(updated);
+  }
 };
 
 export const watchWatchedVideos = (callback: (watched: string[]) => void) => {
-  // Watch both storages - only fire callback for the currently active one
+  // Watch local storage (source of truth)
   const unwatchLocal = watchedVideosLocalItem.watch((newValue: string[]) => {
-    syncEnabledItem.getValue().then((syncEnabled) => {
-      if (!syncEnabled) callback(newValue || []);
-    });
+    callback(newValue || []);
   });
 
+  // Watch sync storage for changes arriving from other devices
   const unwatchSync = watchedVideosSyncItem.watch((newValue: string[]) => {
-    syncEnabledItem.getValue().then((syncEnabled) => {
-      if (syncEnabled) callback(newValue || []);
+    syncEnabledItem.getValue().then(async (syncEnabled) => {
+      if (syncEnabled && newValue) {
+        const localData = await watchedVideosLocalItem.getValue();
+        const merged = Array.from(new Set([...localData, ...newValue]));
+        // Only update local if sync brought in new items
+        if (merged.length > localData.length) {
+          await watchedVideosLocalItem.setValue(merged);
+          // The local watcher above will fire the callback
+        }
+      }
     });
   });
 
