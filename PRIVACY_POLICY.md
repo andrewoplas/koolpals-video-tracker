@@ -1,28 +1,23 @@
 # Privacy Policy for Koolpals Episode Tracker
 
-**Last Updated:** November 29, 2025
+**Last Updated:** September 27, 2026
 
-## 1. Overview
-Koolpals Episode Tracker ("we", "us", or "our") respects your privacy. This Privacy Policy describes the information we collect and how it is used when you use our Chrome Extension.
+## Data stored
+The extension stores YouTube video IDs for watched videos and favorites. It caches video titles, uploader URLs, verification results, and verification timestamps locally. It does not operate an analytics service or send data to the developer.
 
-## 2. Data Collection
-We **do not** collect, transmit, or sell any of your personal data. We do not track your browsing history outside of the specific interactions required to mark videos as watched on YouTube.com and TheKoolPals.com.
+## Browser sync
+When Browser Sync is enabled, watched and favorite IDs are stored using your browser's sync service and may be transferred to other devices signed into that browser account. Titles and uploader metadata remain local. With sync disabled, new changes are stored locally; disabling sync does not delete the existing remote copy.
 
-## 3. Local Data Storage
-All data related to your watch history is stored **locally on your device** using the Chrome Storage API (`chrome.storage.local`). This data never leaves your browser and is not sent to any external servers.
+## YouTube lookups
+To verify that a video belongs to `@TheKoolPals` and retrieve its title, the extension requests YouTube's oEmbed endpoint with that video's ID. This discloses the requested ID and ordinary network information, including your IP address, to YouTube. Requests omit account cookies. Results are cached to reduce repeated requests. Cleanup checks previously saved IDs only when you request a preview.
 
-- **Watched Videos:** We store a list of YouTube video IDs that you have marked as watched. This allows the extension to show you which episodes you have already seen.
+The extension inspects visible history rows when you request history import. It saves only videos verified as Koolpals uploads. It also checks the current video and videos embedded on the Koolpals site to display controls and track playback.
 
-## 4. Third-Party Services
-This extension interacts with the following websites to function:
-- **YouTube.com:** To detect video playback and display watch status.
-- **TheKoolPals.com:** To detect embedded videos and display watch status.
+## Backups and cleanup
+Migration retains the original watched list and local recovery copies. Cleanup removes only videos confirmed to belong to another channel, after you select the removal action. Unresolved videos are retained. A JSON export and a local recovery copy preserve the pre-cleanup watched and favorite IDs.
 
-We do not share your data with these websites.
+## Third-party services
+The extension interacts with YouTube and `patreonsaints.thekoolpals.com`. Browser sync is governed by your browser provider's policies. No separate developer server receives your library.
 
-## 5. Changes to This Policy
-We may update this Privacy Policy from time to time. If we make significant changes, we will notify you by updating the date at the top of this policy.
-
-## 6. Contact Us
-If you have any questions about this Privacy Policy, please contact the developer.
-
+## Changes and contact
+This policy will be updated when data handling changes. Contact the extension developer with questions.
