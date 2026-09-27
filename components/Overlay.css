@@ -1,74 +1,74 @@
+/* Namespaced controls: fixed type sizes stay independent of the host page. */
 .kp-tracker-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none; /* Let clicks pass through to video */
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start; /* Changed from flex-end to flex-start for top-right */
-  padding: 10px;
   box-sizing: border-box;
-  z-index: 50;
-}
-
-/* Override for inline injection in YouTube title */
-.kp-inline-badge-wrapper .kp-tracker-overlay {
-  position: static;
-  width: auto;
-  height: auto;
-  display: inline-flex;
-  padding: 0;
-  transform: none;
-}
-
-/* Specific styles for inline usage on YouTube to remove "badge" look if desired, or just make it fit better */
-.kp-inline-badge-wrapper .kp-tracker-badge {
-  padding: 4px 8px;
-  font-size: 1.4rem; /* Match YouTube title size roughly if needed, or keep small */
-  box-shadow: none;
-  text-transform: none; /* Optional: if you want natural case */
-  border-radius: 2px;
-}
-
-.kp-tracker-badge {
-  pointer-events: auto; /* Enable clicks on the badge */
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-family: "Roboto","Arial",sans-serif; /* Match YouTube font */
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  text-transform: uppercase;
-  line-height: 1; /* Reset line height for better inline alignment */
   display: flex;
   align-items: center;
-  gap: 6px; /* Space between icon and text */
-  white-space: nowrap; /* Prevent wrapping */
+  flex-wrap: wrap;
+  gap: var(--kp-space-2);
+  pointer-events: none;
+  font-family: var(--kp-font);
 }
-
-.kp-tracker-badge.watched {
-  background-color: #10b981; /* Green */
-  color: white;
-  border: 1px solid #059669;
+.kp-controls-embedded {
+  position: absolute;
+  right: 12px;
+  bottom: 56px;
+  left: 12px;
+  justify-content: flex-end;
+  z-index: 50;
 }
-
-.kp-tracker-badge.watched:hover {
-  background-color: #059669;
+.kp-controls-inline { position: static; justify-content: flex-start; padding: 0; }
+.kp-inline-badge-wrapper { display: block; clear: both; margin: 12px 0; }
+.kp-embed-toolbar { display: block; margin: 12px 0; }
+.kp-embed-toolbar .kp-controls-inline { justify-content: flex-end; }
+/* Standalone embeds have no space outside the iframe; clear controls during playback. */
+#movie_player.playing-mode .kp-youtube-overlay-container { visibility: hidden; }
+.kp-youtube-title-row {
+  display: flex !important;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px 20px;
 }
-
-/* Unwatched state: Make it green-themed but distinct (e.g., outline or darker green) */
-.kp-tracker-badge.unwatched {
-  background-color: transparent;
-  color: #10b981; /* Green text */
-  border: 1px solid #10b981; /* Green border */
+.kp-youtube-title-row > h1 { flex: 1 1 320px; min-width: 0; }
+.kp-youtube-title-row > .kp-inline-badge-wrapper {
+  flex: 0 1 auto;
+  margin: 0 0 0 auto;
+  max-width: 100%;
 }
-
-.kp-tracker-badge.unwatched:hover {
-  background-color: rgba(16, 185, 129, 0.1); /* Light green tint on hover */
-  color: #059669;
-  border-color: #059669;
+.kp-youtube-title-row .kp-controls-inline { justify-content: flex-end; }
+.kp-tracker-overlay .kp-tracker-badge {
+  appearance: none;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  gap: 7px;
+  width: auto;
+  min-width: 0;
+  min-height: var(--kp-control-height);
+  margin: 0;
+  padding: 9px 14px;
+  border: 1px solid #80828a;
+  border-radius: var(--kp-radius-pill);
+  background: var(--kp-action-gradient);
+  color: var(--kp-on-dark);
+  font: 600 13px/20px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 2px 6px #0003;
+  transition: background-color var(--kp-motion-fast), border-color var(--kp-motion-fast);
 }
+.kp-tracker-overlay .kp-tracker-badge svg { flex-shrink: 0; width: 17px; height: 17px; }
+.kp-tracker-overlay .kp-tracker-badge:hover { background: #3b3d44; border-color: #a6a8b0; }
+.kp-tracker-overlay .kp-tracker-badge.watched { background: #173c31; border-color: #529f86; color: #b9f2d9; }
+.kp-tracker-overlay .kp-tracker-badge.watched:hover { background: #205341; }
+.kp-tracker-overlay .kp-tracker-badge.favorited { background: var(--kp-brand-deep); border-color: #ff9aa7; color: var(--kp-on-dark); }
+.kp-tracker-overlay .kp-tracker-badge.favorited:hover { background: var(--kp-brand-strong); }
+.kp-tracker-overlay .kp-tracker-badge:focus-visible { outline: 3px solid #ff9aa7; outline-offset: 3px; }
+.kp-tracker-overlay .kp-tracker-badge:disabled { opacity: .65; cursor: wait; }
+.kp-error { pointer-events: auto; flex-basis: 100%; max-width: 340px; padding: 10px 12px; border: 1px solid #e89898; border-radius: 10px; background: #3a2020; color: #ffd4d4; font: 13px/1.5 Arial, sans-serif; }
+@media (pointer: coarse) { .kp-tracker-overlay .kp-tracker-badge { min-height: 44px; } }
+@media (prefers-reduced-motion: reduce) { .kp-tracker-overlay .kp-tracker-badge { transition: none; } }

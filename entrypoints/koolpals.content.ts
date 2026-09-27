@@ -39,28 +39,15 @@ export default defineContentScript({
           
           const parent = iframe.parentElement;
           if (parent) {
-            // Ensure parent is positioned relative so our absolute overlay works
-            const computedStyle = window.getComputedStyle(parent);
-            if (computedStyle.position === 'static') {
-              parent.style.position = 'relative';
-            }
-
-            // Create container for React root
+            // Keep controls outside the responsive player wrapper so they never cover video.
             const appContainer = document.createElement('div');
-            appContainer.style.position = 'absolute';
-            appContainer.style.top = '0';
-            appContainer.style.left = '0';
-            appContainer.style.width = '100%';
-            appContainer.style.height = '100%';
-            appContainer.style.pointerEvents = 'none'; 
-            appContainer.style.zIndex = '10';
+            appContainer.className = 'kp-embed-toolbar';
+            if (parent === document.body) iframe.before(appContainer);
+            else parent.before(appContainer);
 
-            // Append to parent
-            parent.appendChild(appContainer);
-            
             const root = createRoot(appContainer);
-            root.render(React.createElement(Overlay, { videoId }));
-            
+            root.render(React.createElement(Overlay, { videoId, isInline: true }));
+
             processedIframes.add(iframe);
           }
         }

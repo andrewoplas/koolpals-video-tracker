@@ -1,0 +1,42 @@
+/* Koolpals Tracker design tokens. See docs/DESIGN_SYSTEM.md for provenance and usage.
+   Scoped to extension UI so importing this file never themes the host website. */
+.tracker-app, .kp-tracker-overlay {
+  --kp-brand: #fc0303;
+  --kp-brand-strong: #c5091b;
+  --kp-brand-deep: #980c22;
+  --kp-brand-soft: #fff0f0;
+  --kp-canvas: #f6f6f6;
+  --kp-surface: #ffffff;
+  --kp-text: #1a1a1a;
+  --kp-muted: #61616b;
+  --kp-border: #dedee3;
+  --kp-control-border: #888891;
+  --kp-success: #187448;
+  --kp-success-soft: #edf8f1;
+  --kp-error: #a31325;
+  --kp-error-soft: #fff0f2;
+  --kp-focus: #bd1021;
+  --kp-on-dark: #ffffff;
+  --kp-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --kp-type-caption: 11px;
+  --kp-type-small: 12px;
+  --kp-type-body: 14px;
+  --kp-type-heading: 18px;
+  --kp-type-title: 22px;
+  --kp-type-stat: 28px;
+  --kp-space-1: 4px;
+  --kp-space-2: 8px;
+  --kp-space-3: 12px;
+  --kp-space-4: 16px;
+  --kp-space-5: 20px;
+  --kp-space-6: 24px;
+  --kp-radius-small: 8px;
+  --kp-radius-card: 12px;
+  --kp-radius-panel: 16px;
+  --kp-radius-pill: 999px;
+  --kp-shadow-card: 0 1px 2px #17171b0a, 0 0 0 1px #17171b03;
+  --kp-shadow-raised: 0 4px 12px #17171b0d, 0 1px 2px #17171b14;
+  --kp-action-gradient: linear-gradient(180deg, #38383f, #17171b);
+  --kp-motion-fast: 120ms ease;
+  --kp-control-height: 44px;
+}
